@@ -140,11 +140,12 @@ A baseline can capture a modeled landing-zone subset: supported account or proje
 | Strategy | What is reused | Suitable starting point | Important boundary |
 | --- | --- | --- | --- |
 | Declarative setup or seed code | Instructions to recreate resources | SDK/IaC baseline targeting local endpoints | Re-run setup; retain versioned fixture code and account for unsupported APIs. |
+| Emulator-native export or persistence | State in an emulator-supported format or data directory | Firebase export/import, LocalStack snapshots, Azurite `--location`, DynamoDB Local `-dbPath` | Check feature coverage, version compatibility, licensing, and worker isolation. |
 | Request replay | Previously recorded API calls | Moto Recorder | Recreates state; does not serialize process memory or automatically preserve generated IDs. |
 | Process/container checkpoint | Captured execution state | CRIU, Podman, experimental Docker checkpointing; DMTCP for suitable processes | Environment-dependent restore; external services and mounted files need separate consistency handling. |
 | Filesystem or volume copy | Persisted files | Emulators with documented disk-backed state | A disk copy alone cannot restore in-memory state; stop or quiesce writes before capture. |
 
-Start with reproducible setup or replay. If baseline creation is a measured bottleneck, trial process checkpoints on the same Linux runner class and compare end-to-end restore time, reliability, and artifact size. Keep a rebuild path when snapshots become incompatible.
+Start with reproducible setup. If rebuilding is a measured bottleneck, first check emulator-native export or persistence, then request replay and consistent disk copies. Trial process checkpoints on compatible Linux hosts only when simpler methods do not meet the test budget. Compare end-to-end restore time, reliability, and artifact size; keep a rebuild path when artifacts become incompatible.
 
 See the [reusable emulator baseline workflow](reusable-emulator-baselines.md) for capture steps, restore acceptance tests, and primary documentation. These combinations are research candidates; no emulator-specific checkpoint/restore compatibility test has been performed for this list.
 
