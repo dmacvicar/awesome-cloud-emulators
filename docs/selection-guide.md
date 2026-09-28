@@ -140,7 +140,7 @@ A baseline can capture a modeled landing-zone subset: supported account or proje
 | Strategy | What is reused | Suitable starting point | Important boundary |
 | --- | --- | --- | --- |
 | Declarative setup or seed code | Instructions to recreate resources | SDK/IaC baseline targeting local endpoints | Re-run setup; retain versioned fixture code and account for unsupported APIs. |
-| Emulator-native export or persistence | State in an emulator-supported format or data directory | Firebase export/import, LocalStack snapshots, Azurite `--location`, DynamoDB Local `-dbPath` | Check feature coverage, version compatibility, licensing, and worker isolation. |
+| Emulator-native export or persistence | State in an emulator-supported format or data directory | Firebase export/import, LocalStack snapshots, Azurite persistence, DynamoDB Local database | Check feature coverage, version compatibility, licensing, and worker isolation. |
 | Request replay | Previously recorded API calls | Moto Recorder | Recreates state; does not serialize process memory or automatically preserve generated IDs. |
 | Process/container checkpoint | Captured execution state | CRIU, Podman, experimental Docker checkpointing; DMTCP for suitable processes | Environment-dependent restore; external services and mounted files need separate consistency handling. |
 | Filesystem or volume copy | Persisted files | Emulators with documented disk-backed state | A disk copy alone cannot restore in-memory state; stop or quiesce writes before capture. |

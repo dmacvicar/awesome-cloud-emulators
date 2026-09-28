@@ -41,10 +41,10 @@ Skip methods your emulator does not support. Include any volumes and external de
 
 Native options to check first:
 
-- [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite/install_and_configure): `firebase emulators:export`, `--import`, and `--export-on-exit` for supported data emulators (Authentication, Firestore, Realtime Database, and Cloud Storage); these flags do not export every emulator in the suite.
-- [LocalStack](https://docs.localstack.cloud/aws/capabilities/state-management/): persistence (`--persist` or `PERSISTENCE=1`) and local snapshots (`lstk snapshot save/load`); [Cloud Pods](https://docs.localstack.cloud/aws/developer-tools/snapshots/cloud-pods/) share versioned snapshots. The current documentation lists these snapshot features under **Base and Ultimate** plans, with a user license/auth token required for access; check your current plan and terms before CI use.
-- [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite): `--location` chooses the persisted data directory; stop the process before copying it.
-- [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html): `-dbPath` chooses the database directory, and `-sharedDb` uses one database file. `-inMemory` does not persist state.
+- [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite/install_and_configure): export and import data for supported emulators, including Authentication, Firestore, Realtime Database, and Cloud Storage. Confirm coverage for the services your baseline uses.
+- [LocalStack](https://docs.localstack.cloud/aws/capabilities/state-management/): built-in persistence and local snapshots; [Cloud Pods](https://docs.localstack.cloud/aws/developer-tools/snapshots/cloud-pods/) share versioned snapshots. The current documentation lists these snapshot features under **Base and Ultimate** plans, with a user license/auth token required for access; check your current plan and terms before CI use.
+- [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite): a configurable data directory persists emulator state; stop writes before making a copy.
+- [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html): a configurable database directory can preserve state; the in-memory mode does not.
 
 Checkpoint tools include [CRIU](https://github.com/checkpoint-restore/criu) for Linux processes and [Podman checkpoint/restore](https://podman.io/docs/checkpoint) for containers. [DMTCP](https://github.com/dmtcp/dmtcp) is a separate application-level approach; it requires launching the workload under its control. Docker's [checkpoint/restore](https://docs.docker.com/reference/cli/docker/checkpoint) uses CRIU and is experimental.
 
@@ -53,7 +53,7 @@ Checkpoint tools include [CRIU](https://github.com/checkpoint-restore/criu) for 
 ## Prepare and capture
 
 1. **Define a baseline contract.** List the emulator version, supported API operations, accounts or projects, regions, resources, and synthetic data required.
-2. **Make setup reproducible.** Keep SDK seed code or IaC in version control, pin client and provider versions, route calls explicitly to local endpoints, and use dummy credentials. Before any write, check the configured endpoint and query identity from that endpoint. For example, with Moto ServerMode, use `aws --endpoint-url http://127.0.0.1:5000 sts get-caller-identity` and require account `123456789012` (unless you configured a different Moto account); abort on any mismatch. Keep IaC state files consistent with the baseline; they track managed resources but do not necessarily contain the emulator's live state.
+2. **Make setup reproducible.** Keep SDK seed code or IaC in version control, pin client and provider versions, route calls explicitly to local endpoints, and use dummy credentials. Before any write, verify both the configured endpoint and the account or project identity returned by the emulator; abort on a mismatch. Keep IaC state files consistent with the baseline; they track managed resources but do not necessarily contain the emulator's live state.
 3. **Prepare a clean instance.** Apply setup, then assert resource inventory and representative reads.
 4. **Record requests when using replay.** Start before the first setup request, stop after the last, and save the log. Check IDs, timestamps, ordering, and non-idempotent operations on a fresh replay. For Moto, place the seed request immediately after recording starts so replay seeds the fresh server too.
 5. **Quiesce for capture.** Finish requests, stop test clients, and make writes consistent. For process checkpoints, reconnect clients after restore instead of assuming existing sessions survive. Decide how pending work and time-sensitive fixtures should behave.
@@ -87,7 +87,7 @@ accDescr: Start a fresh isolated emulator and check resources. Mutate and discar
 1. Start a fresh emulator and rebuild or replay the baseline, or restore a fresh instance from its captured state. Allocate isolated ports, identities, and writable storage per test worker.
 2. Wait for readiness, reconnect clients, and compare resource inventory and representative payloads with the baseline contract.
 3. Mutate and delete fixtures, run a test, and dispose of the instance and its mutable state.
-4. Restore the original baseline again and assert that the prior mutations are absent. Repeat with two workers to find shared-volume or port collisions. For repeated Podman imports, use `podman container restore --import checkpoint.tar.gz --name <unique-worker-name>` and assign distinct published ports; use `--ignore-static-ip` or `--ignore-static-mac` when static addresses would collide.
+4. Restore the original baseline again and assert that the prior mutations are absent. Repeat with two workers to find shared-volume or port collisions. For repeated Podman imports, give each restored container a unique name and published ports, and review the documented options for ignoring static network addresses when they would collide.
 5. Test time-dependent behavior your suite relies on, such as expiry, scheduled events, or delayed processing. A process snapshot does not guarantee identical wall-clock behavior.
 6. Compare complete rebuild/replay time with restore-and-readiness time, artifact size, and failure rate. Include the cost of recapturing and validating artifacts each time the baseline or execution environment changes. For frequently edited baselines or few test runs, a direct rebuild may be simpler even if each run is slower.
 
@@ -99,63 +99,8 @@ CRIU is Linux-specific. [Podman's documented checkpoint/restore workflow require
 
 For DMTCP, launch the process under its control from the start; see its [quick start](https://github.com/dmtcp/dmtcp/blob/main/QUICK-START.md). Application and container checkpointing have different integration requirements. A local landing-zone fixture models only the resources and behaviors the emulator supports. Keep real-cloud tests for policy enforcement, networking, and other properties outside that model.
 
-## Example: Moto server request replay
+## Applying the approach: request replay and persisted directories
 
-[Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) is built in, supports ServerMode, and is enabled with `MOTO_ENABLE_RECORDING=True`. Its APIs start and stop recording, download or upload the request log, and replay it. Moto documents seeding for repeatable generated IDs; validate dependent requests against the pinned Moto version.
+[Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) illustrates request replay. Record the versioned setup against a clean server, include Moto's seed request at the beginning of the recording when deterministic identifiers matter, then replay into another clean instance and compare the resulting resources with the baseline contract. Because the seed request is recorded, replay applies it again. Recorder reset clears the request log; [server reset](https://docs.getmoto.org/en/stable/docs/server_mode.html#reset-api) clears resource state.
 
-The recorder endpoints are `/moto-api/recorder/start-recording`, `stop-recording`, `download-recording`, `upload-recording`, and `replay-recording`. The seed endpoint is `/moto-api/seed?a=<integer>`. Start recording **before** posting the seed: Moto records the seed request, so replay seeds the fresh server at the same point. Do not seed a second time separately before replay unless you have deliberately removed the recorded seed.
-
-This shell example requires Moto ServerMode, AWS CLI, and curl. It creates an S3 bucket as a tiny baseline; replace that write with your versioned seed script. Run in a disposable directory, and use a separate port for concurrent workers. The endpoint and account guard runs before any AWS write.
-
-```bash
-set -euo pipefail
-export MOTO_ENABLE_RECORDING=True AWS_ACCESS_KEY_ID=testing
-export AWS_SECRET_ACCESS_KEY=testing AWS_DEFAULT_REGION=us-east-1
-MOTO_URL=http://127.0.0.1:5000
-export MOTO_RECORDER_FILEPATH="$PWD/moto-recording-active"
-trap 'kill "$moto_pid" 2>/dev/null || true' EXIT
-check_local() {
-  for attempt in {1..30}; do
-    account=$(aws --endpoint-url "$MOTO_URL" sts get-caller-identity \
-      --query Account --output text 2>/dev/null) || true
-    if [ "$account" = 123456789012 ]; then return 0; fi
-    sleep 0.2
-  done
-  echo "Moto endpoint/account check failed" >&2; return 1
-}
-moto_server -H 127.0.0.1 -p 5000 & moto_pid=$!
-check_local
-curl -fsS -X POST "$MOTO_URL/moto-api/recorder/start-recording"
-curl -fsS -X POST "$MOTO_URL/moto-api/seed?a=42"
-aws --endpoint-url "$MOTO_URL" s3api create-bucket --bucket baseline-fixture
-curl -fsS -X POST "$MOTO_URL/moto-api/recorder/stop-recording"
-curl -fsS "$MOTO_URL/moto-api/recorder/download-recording" -o moto-recording.bin
-kill "$moto_pid"; wait "$moto_pid" || true
-export MOTO_RECORDER_FILEPATH="$PWD/moto-recording-replay"
-moto_server -H 127.0.0.1 -p 5000 & moto_pid=$!
-check_local
-curl -fsS -X POST --data-binary @moto-recording.bin \
-  "$MOTO_URL/moto-api/recorder/upload-recording"
-curl -fsS -X POST "$MOTO_URL/moto-api/recorder/replay-recording"
-aws --endpoint-url "$MOTO_URL" s3api head-bucket --bucket baseline-fixture
-kill "$moto_pid"; wait "$moto_pid" || true
-```
-
-[Recorder reset](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) clears the log, whereas [server reset](https://docs.getmoto.org/en/stable/docs/server_mode.html#reset-api) clears resource state.
-
-## Example: Azurite persisted directory
-
-For a disk-backed baseline, [Azurite's `--location`](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite) stores emulator data in a chosen directory. Seed it through the local Blob/Queue/Table endpoints, stop Azurite cleanly, then copy the entire directory to a baseline you leave untouched. Each worker gets its own writable copy and unique ports:
-
-```bash
-mkdir -p azurite-live
-azurite --location "$PWD/azurite-live" & azurite_pid=$!
-# Seed fixtures through your Azurite connection string; verify them.
-kill "$azurite_pid"; wait "$azurite_pid" || true
-cp -a azurite-live azurite-baseline
-cp -a azurite-baseline azurite-worker-1
-azurite --location "$PWD/azurite-worker-1" \
-  --blobPort 11000 --queuePort 11001 --tablePort 11002
-```
-
-Do not copy a directory while the emulator is writing. Pin the Azurite version and test that restored fixtures survive restart; a copied directory is useful only if its expected state is observable through the emulator's APIs.
+[Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-install-azurite) illustrates persisted-state reuse. Prepare fixtures in a dedicated data directory, stop the emulator before copying that directory, and give each worker an independent writable copy. Verify the restored resources through the emulator's APIs and use isolated endpoints. This is a filesystem copy of persisted state, not a process-memory checkpoint.
