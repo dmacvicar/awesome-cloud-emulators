@@ -10,6 +10,7 @@ Choose against a representative test, not a service count, implementation langua
 - [Comparison by cloud](#comparison-by-cloud)
 - [Important distinctions](#important-distinctions)
 - [Evaluation checklist](#evaluation-checklist)
+- [Reusable emulator baselines](#reusable-emulator-baselines)
 - [Adoption sequence](#adoption-sequence)
 - [Evidence and reconciliation notes](#evidence-and-reconciliation-notes)
 
@@ -30,6 +31,8 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | Test infrastructure automation across clouds | cloudemu; Vera for EC2/Compute scope | Full create/read/update/delete lifecycle with the real CLI or IaC provider. |
 | Run emulators in automated Java tests | Testcontainers Google Cloud Module | Image readiness, fixture isolation, cleanup, and parallel execution. |
 | Invoke and debug Lambda locally | AWS SAM CLI | Runtime and event handling; configure external service dependencies separately. |
+| Rebuild a Moto baseline from requests | Moto Recorder | Replay into a clean instance and verify generated identifiers and dependencies. |
+| Resume a prepared emulator process | CRIU, Podman Checkpoint/Restore, Docker Checkpoint/Restore, DMTCP | Restore on the target runner and verify memory, external state, and clean test isolation. |
 
 ## Comparison by cloud
 
@@ -90,6 +93,11 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | Tool | API scope | How it runs | Maintainer | Key evaluation question |
 | --- | --- | --- | --- | --- |
 | [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) | Local serverless execution | CLI with local/container runtimes | AWS | Supporting tool; supply emulators for service dependencies separately. |
+| [CRIU](https://criu.org) | Linux process state | Linux checkpoint/restore utility | CRIU project | Verify kernel capabilities, privileges, sockets, and the target host; no Moto-specific certification implied. |
+| [DMTCP](https://github.com/dmtcp/dmtcp) | Application process state | Linux launcher and coordinator | DMTCP project | Validate the Python process, libraries, threads, and external connections; not a drop-in OCI snapshot. |
+| [Docker Checkpoint/Restore](https://docs.docker.com/reference/cli/docker/checkpoint) | Container process state | Docker Engine with CRIU | Docker / Moby | Experimental; verify daemon/runtime support and restore behavior on the actual Linux host. |
+| [Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) | Recorded Moto requests | Moto feature; ServerMode APIs | Moto project | Enable recording; replay into clean state; generated identifiers need explicit validation. |
+| [Podman Checkpoint/Restore](https://podman.io/docs/checkpoint) | Container process state | Podman with CRIU and compatible OCI runtime | Podman project | Verify export/import, host compatibility, privileges, mounted data, and network identity. |
 | [Testcontainers Google Cloud Module](https://java.testcontainers.org/modules/gcloud) | Emulator lifecycle in Java tests | Java test library controlling containers | Testcontainers project | Supporting tool; fidelity and licensing come from the selected emulator image. |
 
 ## Important distinctions
@@ -125,6 +133,21 @@ Fullstory's repository ships Bigtable and Cloud Storage implementations. Its REA
 | Operational support | Can failures be diagnosed and upgrades rolled back? | Logs, version/image pin, and upgrade comparison results. |
 | Production validation | Which properties are outside the emulator's model? | A named real-cloud suite and an owner for each gap. |
 
+## Reusable emulator baselines
+
+A baseline can capture a modeled landing-zone subset: supported account/region setup, queues, buckets, tables, policies, and test data. It does not establish real-cloud policy enforcement or landing-zone compliance.
+
+| Strategy | What is reused | Suitable starting point | Important boundary |
+| --- | --- | --- | --- |
+| Declarative setup or seed code | Instructions to recreate resources | SDK/IaC baseline targeting local endpoints | Re-run setup; retain versioned fixture code and account for unsupported APIs. |
+| Request replay | Previously recorded API calls | Moto Recorder | Recreates state; does not serialize process memory or automatically preserve generated IDs. |
+| Process/container checkpoint | Captured execution state | CRIU, Podman, experimental Docker checkpointing; DMTCP for suitable processes | Environment-dependent restore; external services and mounted files need separate consistency handling. |
+| Filesystem or volume copy | Persisted files | Tools for emulators that persist their state to disk | A disk copy alone cannot restore an in-memory Moto server baseline. |
+
+Start with reproducible setup or replay. If baseline creation is a measured bottleneck, trial process checkpoints on the same Linux runner class and compare end-to-end restore time, reliability, and artifact size. Keep a rebuild path when snapshots become incompatible.
+
+See the [Moto baseline workflow](moto-baselines.md) for capture steps, restore acceptance tests, and primary documentation. These combinations are research candidates; no Moto checkpoint/restore compatibility test has been performed for this list.
+
 ## Adoption sequence
 
 1. **Define a small vertical slice.** Record the SDK/IaC version, operations, event flow, expected errors, and acceptable differences.
@@ -151,7 +174,7 @@ Fullstory's repository ships Bigtable and Cloud Storage implementations. Its REA
 
 Documentation review: **2026-09-28**. This is a documentation-based comparison, not a hands-on compatibility certification or performance benchmark.
 
-- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. The result is 28 emulator/mock entries plus 2 supporting tools.
+- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. That reconciliation produced 28 emulator/mock entries plus 2 supporting tools. A subsequent checkpoint/baseline review added 5 supporting tools or features, bringing the catalog to 35 entries: 28 emulators/mocks and 7 supporting entries.
 - Preserved the attachment's provider and multi-service/single-service organization, while keeping detailed comparisons in this guide and a concise catalog in the README.
 - Used upstream documentation linked in the tables. Removed exact service counts, benchmark claims, blanket “active” labels, and hard-coded Java versions that do not establish suitability and can quickly become stale.
 - Removed the attachment's Cloud Tasks inactivity claim: the [repository metadata](https://api.github.com/repos/aertje/cloud-tasks-emulator) reported a push on 2026-09-09 during this review. A recent push alone does not establish maintenance quality or compatibility.

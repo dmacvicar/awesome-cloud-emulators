@@ -84,9 +84,16 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 
 ## Supporting Tools
 
-These tools run local workloads or manage emulator lifecycles; they are not full cloud emulators.
+These tools run local workloads, manage emulator lifecycles, or prepare and restore test baselines; they are not full cloud emulators. Checkpoint integrations are listed for their specific emulator use case.
+
+For Moto server baselines and landing-zone test fixtures, see the [baseline and snapshot workflow](docs/moto-baselines.md).
 
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) - AWS tooling for local invocation and debugging of serverless applications, including Lambda functions.
+- [CRIU](https://criu.org) - Linux process checkpoint/restore utility for capturing a running emulator and resuming its in-memory state; requires a compatible kernel and runtime environment.
+- [DMTCP](https://github.com/dmtcp/dmtcp) - User-space checkpointing for Linux applications launched under its control; a candidate for emulator-process experiments after compatibility validation.
+- [Docker Checkpoint/Restore](https://docs.docker.com/reference/cli/docker/checkpoint) - Experimental Docker Engine integration with CRIU for checkpointing and restoring running containers.
+- [Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) - Built-in Moto request recording and replay for rebuilding test baselines; replay is not a process-memory snapshot.
+- [Podman Checkpoint/Restore](https://podman.io/docs/checkpoint) - CRIU-backed container checkpointing with archive export/import for restoring prepared emulator environments on compatible Linux hosts.
 - [Testcontainers Google Cloud Module](https://java.testcontainers.org/modules/gcloud) - Java test integrations that manage the lifecycle of Google Cloud emulator containers.
 
 ## Choosing an Emulator
