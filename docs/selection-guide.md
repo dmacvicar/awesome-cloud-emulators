@@ -31,7 +31,7 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | Test infrastructure automation across clouds | cloudemu; Vera for EC2/Compute scope | Full create/read/update/delete lifecycle with the real CLI or IaC provider. |
 | Run emulators in automated Java tests | Testcontainers Google Cloud Module | Image readiness, fixture isolation, cleanup, and parallel execution. |
 | Invoke and debug Lambda locally | AWS SAM CLI | Runtime and event handling; configure external service dependencies separately. |
-| Rebuild a Moto baseline from requests | Moto Recorder | Replay into a clean instance and verify generated identifiers and dependencies. |
+| Rebuild a baseline from recorded requests | Emulator recording or a client-side request log, such as Moto Recorder | Replay into a clean instance and verify generated identifiers and dependencies. |
 | Resume a prepared emulator process | CRIU, Podman Checkpoint/Restore, Docker Checkpoint/Restore, DMTCP | Restore on the target runner and verify memory, external state, and clean test isolation. |
 
 ## Comparison by cloud
@@ -93,7 +93,7 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | Tool | API scope | How it runs | Maintainer | Key evaluation question |
 | --- | --- | --- | --- | --- |
 | [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) | Local serverless execution | CLI with local/container runtimes | AWS | Supporting tool; supply emulators for service dependencies separately. |
-| [CRIU](https://criu.org) | Linux process state | Linux checkpoint/restore utility | CRIU project | Verify kernel capabilities, privileges, sockets, and the target host; no Moto-specific certification implied. |
+| [CRIU](https://criu.org) | Linux process state | Linux checkpoint/restore utility | CRIU project | Verify kernel capabilities, privileges, sockets, and the target host; no emulator-specific certification implied. |
 | [DMTCP](https://github.com/dmtcp/dmtcp) | Application process state | Linux launcher and coordinator | DMTCP project | Validate the Python process, libraries, threads, and external connections; not a drop-in OCI snapshot. |
 | [Docker Checkpoint/Restore](https://docs.docker.com/reference/cli/docker/checkpoint) | Container process state | Docker Engine with CRIU | Docker / Moby | Experimental; verify daemon/runtime support and restore behavior on the actual Linux host. |
 | [Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) | Recorded Moto requests | Moto feature; ServerMode APIs | Moto project | Enable recording; replay into clean state; generated identifiers need explicit validation. |
@@ -135,18 +135,18 @@ Fullstory's repository ships Bigtable and Cloud Storage implementations. Its REA
 
 ## Reusable emulator baselines
 
-A baseline can capture a modeled landing-zone subset: supported account/region setup, queues, buckets, tables, policies, and test data. It does not establish real-cloud policy enforcement or landing-zone compliance.
+A baseline can capture a modeled landing-zone subset: supported account or project setup, storage, messaging, databases, policies, and test data. It does not establish real-cloud policy enforcement or landing-zone compliance.
 
 | Strategy | What is reused | Suitable starting point | Important boundary |
 | --- | --- | --- | --- |
 | Declarative setup or seed code | Instructions to recreate resources | SDK/IaC baseline targeting local endpoints | Re-run setup; retain versioned fixture code and account for unsupported APIs. |
 | Request replay | Previously recorded API calls | Moto Recorder | Recreates state; does not serialize process memory or automatically preserve generated IDs. |
 | Process/container checkpoint | Captured execution state | CRIU, Podman, experimental Docker checkpointing; DMTCP for suitable processes | Environment-dependent restore; external services and mounted files need separate consistency handling. |
-| Filesystem or volume copy | Persisted files | Tools for emulators that persist their state to disk | A disk copy alone cannot restore an in-memory Moto server baseline. |
+| Filesystem or volume copy | Persisted files | Emulators with documented disk-backed state | A disk copy alone cannot restore in-memory state; stop or quiesce writes before capture. |
 
 Start with reproducible setup or replay. If baseline creation is a measured bottleneck, trial process checkpoints on the same Linux runner class and compare end-to-end restore time, reliability, and artifact size. Keep a rebuild path when snapshots become incompatible.
 
-See the [Moto baseline workflow](moto-baselines.md) for capture steps, restore acceptance tests, and primary documentation. These combinations are research candidates; no Moto checkpoint/restore compatibility test has been performed for this list.
+See the [reusable emulator baseline workflow](reusable-emulator-baselines.md) for capture steps, restore acceptance tests, and primary documentation. These combinations are research candidates; no emulator-specific checkpoint/restore compatibility test has been performed for this list.
 
 ## Adoption sequence
 
