@@ -4,10 +4,13 @@
 
 Choose against a representative test, not a service count, implementation language, or a claim of full compatibility. This guide combines the catalog's service grouping with practical runtime, ownership, and validation questions.
 
+**License markers:** 💰 Paid commercial plan or license for commercial use; a free tier or exception may exist. 📜 Vendor-specific software terms or an EULA apply; this does **not** mean a fee is required. Open-source licenses still apply to unmarked tools. Markers highlight verified conditions, not an exhaustive license audit.
+
 ## Contents
 
 - [Start with your test scenario](#start-with-your-test-scenario)
 - [Comparison by cloud](#comparison-by-cloud)
+- [License and access notes](#license-and-access-notes)
 - [Important distinctions](#important-distinctions)
 - [Evaluation checklist](#evaluation-checklist)
 - [Adoption sequence](#adoption-sequence)
@@ -44,10 +47,10 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | [fakecloud](https://fakecloud.dev) | AWS APIs | Binary or Docker; test SDKs | Community | Exercise async control and assertions; verify the operations you need. |
 | [Floci](https://floci.io/floci) | AWS APIs | Docker / Compose | Community | Check service-to-service flows and persistence for your workload. |
 | [LocalEmu](https://localemu.cloud) | AWS APIs | Python CLI; Docker for selected engines | Community | Separate in-process API behavior from engine-backed requirements. |
-| [LocalStack](https://docs.localstack.cloud/aws) | AWS APIs | Container, managed through CLI or Docker | Vendor | Plan coverage, authentication, CI entitlements, and network requirements. |
+| [LocalStack 💰 📜](https://docs.localstack.cloud/aws) | AWS APIs | Container, managed through CLI or Docker | Vendor | Plan coverage, authentication, CI entitlements, and network requirements. |
 | [MiniStack](https://ministack.org) | AWS APIs | Docker; selected external engines | Community | Check account/region isolation and which data planes actually execute. |
 | [Moto](https://github.com/getmoto/moto) | AWS API mocks | Python library, server, or Docker | Community | Choose library or server mode; validate supported operations and behaviors. |
-| [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) | DynamoDB | Java archive, Maven dependency, or Docker | AWS | Compare transactions, indexes, and cloud-only behavior. |
+| [DynamoDB Local 📜](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) | DynamoDB | Java archive, Maven dependency, or Docker | AWS | Compare transactions, indexes, and cloud-only behavior. |
 | [ElasticMQ](https://github.com/softwaremill/elasticmq) | SQS-compatible queues | JVM server, embedded library, or Docker | Community / SoftwareMill | Verify FIFO, visibility timeouts, redelivery, and dead-letter behavior. |
 | [S3Mock](https://github.com/adobe/S3Mock) | S3 API subset | Docker / Testcontainers; JVM integrations | Community / Adobe | Check supported object operations and your chosen integration version. |
 
@@ -57,9 +60,9 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | --- | --- | --- | --- | --- |
 | [Floci AZ](https://github.com/floci-io/floci-az) | Azure APIs | Docker / Compose; engine-backed services | Community | Verify SDK routing, TLS, auth mode, and Docker requirements per service. |
 | [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator) | Cosmos DB | Windows or container variants | Microsoft | Choose the correct API, OS, and architecture variant; check TLS setup. |
-| [Azure Event Hubs Emulator](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) | Event Hubs | Container with Azurite dependency | Microsoft | Check protocols, partition behavior, limits, and restart persistence. |
+| [Azure Event Hubs Emulator 📜](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) | Event Hubs | Container with Azurite dependency | Microsoft | Check protocols, partition behavior, limits, and restart persistence. |
 | [Azure Key Vault Emulator](https://github.com/james-gould/azure-keyvault-emulator) | Key Vault APIs | Docker; .NET Aspire integration | Community | Check secrets/keys/certificates coverage, TLS trust, and persistence. |
-| [Azure Service Bus Emulator](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) | Service Bus | Container with database dependency | Microsoft | Check messaging features, dependencies, limits, and state reset. |
+| [Azure Service Bus Emulator 📜](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) | Service Bus | Container with database dependency | Microsoft | Check messaging features, dependencies, limits, and state reset. |
 | [Azurite](https://github.com/Azure/Azurite) | Blob, Queue, Table Storage | npm CLI, Docker, or VS Code extension | Microsoft | Verify required API versions and storage-specific behavior. |
 
 ### Google Cloud and Firebase
@@ -91,6 +94,19 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | --- | --- | --- | --- | --- |
 | [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) | Local serverless execution | CLI with local/container runtimes | AWS | Supporting tool; supply emulators for service dependencies separately. |
 | [Testcontainers Google Cloud Module](https://java.testcontainers.org/modules/gcloud) | Emulator lifecycle in Java tests | Java test library controlling containers | Testcontainers project | Supporting tool; fidelity and licensing come from the selected emulator image. |
+
+## License and access notes
+
+Checked against primary sources on **2026-09-28**. These markers describe the listed distribution; dependencies and optional hosted services can carry separate terms.
+
+| Tool | Markers | What to check | Primary source |
+| --- | --- | --- | --- |
+| LocalStack | 💰 📜 | Commercial use is offered through paid plans, subject to vendor exceptions/programs. Hobby is free for non-commercial use; activation requires an account/token. | [Plans and pricing](https://www.localstack.cloud/pricing), [activation](https://docs.localstack.cloud/aws/getting-started/installation). |
+| DynamoDB Local | 📜 | The downloadable software has a specific AWS license agreement. This marker identifies those conditions, not a paid emulator subscription. | [DynamoDB Local License Agreement](https://aws.amazon.com/dynamodb/dynamodblocallicense). |
+| Azure Event Hubs Emulator | 📜 | Startup requires accepting Microsoft's software terms through `ACCEPT_EULA`. | [Microsoft setup and EULA instructions](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator). |
+| Azure Service Bus Emulator | 📜 | Setup requires accepting the emulator and SQL Server Linux terms through `ACCEPT_EULA`. | [Microsoft setup and EULA instructions](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator). |
+
+An unmarked entry is not a claim of unrestricted use or a verified open-source runtime. For example, the MIT license in the Cosmos DB emulator's supporting GitHub repository should not be used to infer the license of every downloadable runtime; review the terms shipped with the selected image or installer. Apply the same release-specific check to SDK-bundled components and container dependencies.
 
 ## Important distinctions
 
