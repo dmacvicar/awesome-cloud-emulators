@@ -4,6 +4,8 @@
 
 Discover emulators and cloud-specific test doubles for **AWS, Microsoft Azure, and Google Cloud (GCP)**. Build repeatable integration tests and shorten feedback loops without provisioning every dependency in a cloud account.
 
+Local mocks and emulators can **reduce development and CI costs** by avoiding repeated provisioning, idle test resources, and billable service calls in cloud accounts. Savings depend on the workload and should be weighed against local compute, maintenance, and any emulator licensing costs.
+
 Entries are grouped by the APIs they emulate, not where they run. Multi-service means a suite or collection spanning services; it does not promise integrated behavior between them. Provider-built, community, and commercial tools are included. Supporting tools are listed separately.
 
 **Emulation is not full service parity.** Check supported operations, persistence, identity behavior, runtime requirements, licensing, and access conditions. Use real-cloud tests for production-specific guarantees. The [selection guide](docs/selection-guide.md) includes scenario-based shortlists, a comparison of every entry, and an evaluation checklist.
@@ -39,6 +41,7 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 - [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) - AWS-provided local DynamoDB implementation for developing and testing database interactions.
 - [ElasticMQ](https://github.com/softwaremill/elasticmq) - Community message queue with an Amazon SQS-compatible interface, usable as a standalone server or embedded dependency.
 - [S3Mock](https://github.com/adobe/S3Mock) - Community implementation of a subset of the Amazon S3 API for local integration testing, with Docker and Testcontainers support.
+- [S3Proxy](https://github.com/gaul/s3proxy) - Community S3-compatible API server backed by configurable storage, including a local filesystem for testing object operations.
 
 
 ## Microsoft Azure
@@ -73,6 +76,7 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 - [Fake GCS Server](https://github.com/fsouza/fake-gcs-server) - Community Google Cloud Storage emulator usable as a standalone server or Go testing library.
 - [Firestore Emulator](https://cloud.google.com/firestore/native/docs/emulator) - Google-provided local Firestore environment for testing database operations without connecting to a production database.
 - [Pub/Sub Emulator](https://cloud.google.com/pubsub/docs/emulator) - Google-provided local Pub/Sub environment for testing publishers and subscribers.
+- [Pub/Sub pstest](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/pstest) - In-process fake Pub/Sub server from the Google Cloud Go client libraries for focused Go tests.
 - [Spanner Emulator](https://cloud.google.com/spanner/docs/emulator) - Google-provided local Spanner environment for testing application behavior against supported database APIs.
 
 
@@ -87,12 +91,17 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 These tools run local workloads, manage emulator lifecycles, or prepare and restore test baselines; they are not full cloud emulators. Checkpoint integrations are listed for their specific emulator use case.
 
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) - AWS tooling for local invocation and debugging of serverless applications, including Lambda functions.
+- [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) - AWS-provided proxy for testing Lambda functions packaged as container images locally; it does not emulate dependent cloud services.
+- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local) - Microsoft tooling to run and test Azure Functions locally; configure service dependencies separately.
 - [CRIU](https://criu.org) - Linux process checkpoint/restore utility for capturing a running emulator and resuming its in-memory state; requires a compatible kernel and runtime environment.
 - [DMTCP](https://github.com/dmtcp/dmtcp) - User-space checkpointing for Linux applications launched under its control; a candidate for emulator-process experiments after compatibility validation.
 - [Docker Checkpoint/Restore](https://docs.docker.com/reference/cli/docker/checkpoint) - Experimental Docker Engine integration with CRIU for checkpointing and restoring running containers.
 - [Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) - Built-in Moto request recording and replay for rebuilding test baselines; replay is not a process-memory snapshot.
 - [Podman Checkpoint/Restore](https://podman.io/docs/checkpoint) - CRIU-backed container checkpointing with archive export/import for restoring prepared emulator environments on compatible Linux hosts.
+- [Testcontainers Azure Module](https://java.testcontainers.org/modules/azure/) - Java test integrations that manage Azurite, Event Hubs, Service Bus, and Cosmos DB emulator containers.
 - [Testcontainers Google Cloud Module](https://java.testcontainers.org/modules/gcloud) - Java test integrations that manage the lifecycle of Google Cloud emulator containers.
+- [Testcontainers LocalStack Module](https://java.testcontainers.org/modules/localstack/) - Java test integration that manages a LocalStack container and its endpoints; emulator features depend on the selected LocalStack plan.
+- [Toxiproxy](https://github.com/Shopify/toxiproxy) - TCP proxy for injecting latency, connection failures, and other network faults between an application and a local emulator.
 
 ## Choosing an Emulator
 

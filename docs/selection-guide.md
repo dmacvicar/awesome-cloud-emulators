@@ -22,15 +22,17 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | --- | --- | --- |
 | Isolate Python logic using AWS SDK calls | Moto | Supported calls, mock lifecycle, and state isolation. |
 | Exercise an AWS event-driven application | fakecloud, Floci, LocalEmu, LocalStack, MiniStack | A complete publish → consume → retry path, not just resource creation. |
-| Test one AWS dependency | DynamoDB Local, ElasticMQ, S3Mock | Exact database, queue, or object operations required by the application. |
+| Test one AWS dependency | DynamoDB Local, ElasticMQ, S3Mock, S3Proxy | Exact database, queue, or object operations required by the application. |
 | Test an Azure application dependency | Azurite, Cosmos DB, Event Hubs, Service Bus, or Key Vault emulators | SDK connectivity, TLS, and required data-plane behavior. |
 | Test several Azure APIs together | Floci AZ | Cross-service behavior and which functions or engines require Docker. |
 | Test a Firebase application | Firebase Local Emulator Suite | Auth, Security Rules, database events, and function triggers used by the app. |
-| Test Google Cloud data and messaging clients | Provider emulators; Fake GCS Server, Fullstory, BigQuery, or Cloud Tasks emulators | Client endpoints, SQL/queries, messages, tasks, and failure semantics. |
+| Test Google Cloud data and messaging clients | Provider emulators; Fake GCS Server, Fullstory, BigQuery, Cloud Tasks, or Pub/Sub pstest for Go | Client endpoints, SQL/queries, messages, tasks, and failure semantics. |
 | Test several Google Cloud APIs together | Floci GCP | REST/gRPC coverage and integrated behavior for your specific flow. |
 | Test infrastructure automation across clouds | cloudemu; Vera for EC2/Compute scope | Full create/read/update/delete lifecycle with the real CLI or IaC provider. |
-| Run emulators in automated Java tests | Testcontainers Google Cloud Module | Image readiness, fixture isolation, cleanup, and parallel execution. |
-| Invoke and debug Lambda locally | AWS SAM CLI | Runtime and event handling; configure external service dependencies separately. |
+| Run emulators in automated Java tests | Testcontainers Azure, Google Cloud, or LocalStack modules | Image readiness, fixture isolation, cleanup, and parallel execution. |
+| Invoke and debug Lambda locally | AWS SAM CLI; Lambda Runtime Interface Emulator for container images | Runtime and event handling; configure external service dependencies separately. |
+| Run Azure Functions locally | Azure Functions Core Tools | Trigger behavior and connections to local service emulators. |
+| Test network failures against an emulator | Toxiproxy | Verify retry, timeout, and recovery behavior without claiming cloud network parity. |
 | Rebuild a baseline from recorded requests | Emulator recording or a client-side request log, such as Moto Recorder | Replay into a clean instance and verify generated identifiers and dependencies. |
 | Resume a prepared emulator process | CRIU, Podman Checkpoint/Restore, Docker Checkpoint/Restore, DMTCP | Restore on the target runner and verify memory, external state, and clean test isolation. |
 
@@ -53,6 +55,7 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) | DynamoDB | Java archive, Maven dependency, or Docker | AWS | Compare transactions, indexes, and cloud-only behavior. |
 | [ElasticMQ](https://github.com/softwaremill/elasticmq) | SQS-compatible queues | JVM server, embedded library, or Docker | Community / SoftwareMill | Verify FIFO, visibility timeouts, redelivery, and dead-letter behavior. |
 | [S3Mock](https://github.com/adobe/S3Mock) | S3 API subset | Docker / Testcontainers; JVM integrations | Community / Adobe | Check supported object operations and your chosen integration version. |
+| [S3Proxy](https://github.com/gaul/s3proxy) | S3-compatible API over storage backends | Java server or Docker | Community | Choose a local backend and test the exact S3 operations your SDK uses. |
 
 ### Microsoft Azure
 
@@ -79,6 +82,7 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | [Fake GCS Server](https://github.com/fsouza/fake-gcs-server) | Cloud Storage | Go library, binary, or Docker | Community | Check signed URLs, endpoint configuration, and supported operations. |
 | [Firestore Emulator](https://cloud.google.com/firestore/native/docs/emulator) | Firestore | gcloud or Firebase CLI with Java runtime | Google | Check transactions, queries, and differences from production indexes and limits. |
 | [Pub/Sub Emulator](https://cloud.google.com/pubsub/docs/emulator) | Pub/Sub | gcloud component with Java runtime; container workflows | Google | Check acknowledgments, ordering, retry, and subscription features. |
+| [Pub/Sub pstest](https://pkg.go.dev/cloud.google.com/go/pubsub/v2/pstest) | Fake Pub/Sub API for Go tests | In-process Go gRPC server | Google Cloud Go client library | Check supported calls and behavior; distinct from the standalone Pub/Sub Emulator. |
 | [Spanner Emulator](https://cloud.google.com/spanner/docs/emulator) | Spanner | gcloud component or Docker | Google | Check SQL dialect, transactions, and documented operational differences. |
 
 ### Cross-Cloud
@@ -93,12 +97,17 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | Tool | API scope | How it runs | Maintainer | Key evaluation question |
 | --- | --- | --- | --- | --- |
 | [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) | Local serverless execution | CLI with local/container runtimes | AWS | Supporting tool; supply emulators for service dependencies separately. |
+| [AWS Lambda Runtime Interface Emulator](https://github.com/aws/aws-lambda-runtime-interface-emulator) | Lambda runtime invocation for container images | Lightweight local proxy / container runtime | AWS | Test function invocation; it does not reproduce Lambda's full managed environment. |
+| [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local) | Local Functions execution | CLI with local Functions host | Microsoft | Check trigger and binding dependencies; connect to separate local emulators as needed. |
 | [CRIU](https://criu.org) | Linux process state | Linux checkpoint/restore utility | CRIU project | Verify kernel capabilities, privileges, sockets, and the target host; no emulator-specific certification implied. |
 | [DMTCP](https://github.com/dmtcp/dmtcp) | Application process state | Linux launcher and coordinator | DMTCP project | Validate the Python process, libraries, threads, and external connections; not a drop-in OCI snapshot. |
 | [Docker Checkpoint/Restore](https://docs.docker.com/reference/cli/docker/checkpoint) | Container process state | Docker Engine with CRIU | Docker / Moby | Experimental; verify daemon/runtime support and restore behavior on the actual Linux host. |
 | [Moto Recorder](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html) | Recorded Moto requests | Moto feature; ServerMode APIs | Moto project | Enable recording; replay into clean state; generated identifiers need explicit validation. |
 | [Podman Checkpoint/Restore](https://podman.io/docs/checkpoint) | Container process state | Podman with CRIU and compatible OCI runtime | Podman project | Verify export/import, host compatibility, privileges, mounted data, and network identity. |
+| [Testcontainers Azure Module](https://java.testcontainers.org/modules/azure/) | Azure emulator lifecycle in Java tests | Java test library controlling containers | Testcontainers project | Check image prerequisites, certificates, readiness, and isolated test state. |
 | [Testcontainers Google Cloud Module](https://java.testcontainers.org/modules/gcloud) | Emulator lifecycle in Java tests | Java test library controlling containers | Testcontainers project | Supporting tool; fidelity and licensing come from the selected emulator image. |
+| [Testcontainers LocalStack Module](https://java.testcontainers.org/modules/localstack/) | LocalStack lifecycle in Java tests | Java test library controlling a container | Testcontainers project | Check LocalStack image version, plan access, endpoints, and supported services. |
+| [Toxiproxy](https://github.com/Shopify/toxiproxy) | TCP network fault injection | Proxy server with test clients | Community / Shopify | Route emulator traffic through it and verify retry or timeout behavior; not a cloud emulator. |
 
 ## Important distinctions
 
@@ -115,7 +124,7 @@ The [former LocalStack source repository](https://github.com/localstack/localsta
 
 ### Fullstory coverage
 
-Fullstory's repository ships Bigtable and Cloud Storage implementations. Its README also discusses using Google's `pubsub/pstest`; that is not presented here as a third standalone Fullstory emulator. Use the Pub/Sub entry for the provider's server emulator.
+Fullstory's repository ships Bigtable and Cloud Storage implementations. Its README also discusses Google's `pubsub/pstest`, now listed separately as an in-process Go fake. The provider's standalone Pub/Sub Emulator remains a distinct entry.
 
 ## Evaluation checklist
 
@@ -175,7 +184,7 @@ These combinations are research candidates; verify restore behavior and isolatio
 
 Documentation review: **2026-09-28**. This is a documentation-based comparison, not a hands-on compatibility certification or performance benchmark.
 
-- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. That reconciliation produced 28 emulator/mock entries plus 2 supporting tools. A subsequent checkpoint/baseline review added 5 supporting tools or features, bringing the catalog to 35 entries: 28 emulators/mocks and 7 supporting entries.
+- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. That reconciliation produced 28 emulator/mock entries plus 2 supporting tools. A subsequent checkpoint/baseline review added 5 supporting tools or features. This review added 2 focused API test doubles and 5 supporting tools, bringing the catalog to 42 entries: 30 emulators/mocks and 12 supporting entries.
 - Preserved the attachment's provider and multi-service/single-service organization, while keeping detailed comparisons in this guide and a concise catalog in the README.
 - Used upstream documentation linked in the tables. Removed exact service counts, benchmark claims, blanket “active” labels, and hard-coded Java versions that do not establish suitability and can quickly become stale.
 - Removed the attachment's Cloud Tasks inactivity claim: the [repository metadata](https://api.github.com/repos/aertje/cloud-tasks-emulator) reported a push on 2026-09-09 during this review. A recent push alone does not establish maintenance quality or compatibility.
