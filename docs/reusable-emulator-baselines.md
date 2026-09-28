@@ -2,31 +2,31 @@
 
 [Back to the selection guide](selection-guide.md#reusable-emulator-baselines)
 
-Use this workflow to prepare a repeatable starting state for tests or research with a single-service emulator or a broader cloud API suite. Start with versioned setup, then prefer the emulator's own export or persistence feature when rebuilding is slow. **The checkpoint combinations here have not been tested with particular emulators; verify them on your CI hosts before adoption.** Documentation reviewed on **2026-09-28**: Moto [stable 5.2.3](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html), and the linked current Firebase, LocalStack, Azurite, DynamoDB Local, Podman, CRIU, and Docker documentation. Pin and record actual tool versions in each baseline; unversioned documentation can change.
+Use this workflow to prepare a repeatable starting state for tests or research with a single-service emulator or a broader cloud API suite. Start with versioned setup, then consider the emulator's own export or persistence feature for repeated setup, sharing, or isolation. **The checkpoint combinations here have not been tested with particular emulators; verify them on your CI hosts before adoption.** Documentation reviewed on **2026-09-28**: Moto [stable 5.2.3](https://docs.getmoto.org/en/stable/docs/configuration/recorder/index.html), and the linked current Firebase, LocalStack, Azurite, DynamoDB Local, Podman, CRIU, and Docker documentation. Pin and record actual tool versions in each baseline; unversioned documentation can change.
 
 ## Choose what to preserve
 
-Measure the complete rebuild time first. If it exceeds your test budget, try methods in this order and keep the versioned seed as a fallback. A method is useful only if it passes the [restore acceptance sequence](#restore-and-prove-isolation) and improves total time or reliability.
+First define how often the baseline changes, how many times it is reused, and whether workers or teams need independent copies. Measure a complete rebuild, but also count the effort to regenerate and validate an artifact whenever seed code, fixture data, emulator version, or configuration changes. Try methods in the order below when reuse, sharing, isolation, or setup cost warrants an artifact. Keep the versioned seed as the source of truth. Adopt a method only if it passes the [restore acceptance sequence](#restore-and-prove-isolation) and its ongoing maintenance cost is justified.
 
 ```mermaid
 flowchart TD
 accTitle: Choosing a reusable emulator baseline method
-accDescr: Start with a versioned seed. If rebuilding is too slow, try native export or persistence, then request replay, then a consistent disk copy, then a process checkpoint. Adopt only after restore validation; otherwise move to the next option or simplify the seed.
-    A["Versioned seed code or IaC"] --> B{"Rebuild within budget?"}
-    B -->|Yes| C["Rebuild per instance"]
-    B -->|No| D["Trial native export or persistence"]
-    D --> V{"Restore checks pass and faster?"}
+accDescr: Start with a versioned seed. If repeated setup, sharing, or isolation calls for a reusable artifact, try native export or persistence, request replay, a consistent disk copy, then a process checkpoint. Adopt only when restore checks and maintenance economics pass; otherwise try another method or rebuild.
+    A["Versioned seed code or IaC"] --> B{"Reusable artifact worthwhile?"}
+    B -->|No| C["Rebuild per instance"]
+    B -->|Yes| D["Trial native export or persistence"]
+    D --> V{"Restore and upkeep acceptable?"}
     V -->|Yes| Y["Adopt this method"]
     V -->|No| E["Trial request replay"]
-    E --> V2{"Restore checks pass and faster?"}
+    E --> V2{"Restore and upkeep acceptable?"}
     V2 -->|Yes| Y
     V2 -->|No| F["Trial consistent disk copy"]
-    F --> V3{"Restore checks pass and faster?"}
+    F --> V3{"Restore and upkeep acceptable?"}
     V3 -->|Yes| Y
     V3 -->|No| G["Trial process checkpoint"]
-    G --> V4{"Restore checks pass and faster?"}
+    G --> V4{"Restore and upkeep acceptable?"}
     V4 -->|Yes| Y
-    V4 -->|No| H["Reduce seed scope or accept rebuild"]
+    V4 -->|No| H["Simplify seed or accept rebuild"]
 ```
 
 Skip methods your emulator does not support. Include any volumes and external dependencies required for a consistent restore.
@@ -67,7 +67,7 @@ Run this acceptance sequence on the actual CI runner class for each candidate me
 ```mermaid
 flowchart TD
 accTitle: Validating an emulator baseline restore
-accDescr: Start a fresh isolated emulator and check resources. Mutate and discard it, restore again in two workers, verify isolation and time behavior, then compare cost and reliability. Failed checks return to setup or restore configuration; only successful checks lead to adoption.
+accDescr: Start a fresh isolated emulator and check resources. Mutate and discard it, restore again in two workers, verify isolation and time behavior, then compare runtime, reliability, and artifact upkeep after baseline changes. Failed checks return to setup or restore configuration; only a worthwhile method is adopted.
     A["Start fresh isolated emulator"] --> B{"Ready and resources correct?"}
     B -->|No| C["Fix setup or artifact"]
     C --> A
@@ -78,8 +78,8 @@ accDescr: Start a fresh isolated emulator and check resources. Mutate and discar
     G --> A
     F -->|Yes| H{"Time behavior correct?"}
     H -->|No| C
-    H -->|Yes| I["Compare time, size, failures"]
-    I --> J{"Meets test budget?"}
+    H -->|Yes| I["Compare runtime and upkeep"]
+    I --> J{"Worth maintaining?"}
     J -->|Yes| K["Adopt method"]
     J -->|No| L["Try next method"]
 ```
@@ -89,7 +89,7 @@ accDescr: Start a fresh isolated emulator and check resources. Mutate and discar
 3. Mutate and delete fixtures, run a test, and dispose of the instance and its mutable state.
 4. Restore the original baseline again and assert that the prior mutations are absent. Repeat with two workers to find shared-volume or port collisions. For repeated Podman imports, use `podman container restore --import checkpoint.tar.gz --name <unique-worker-name>` and assign distinct published ports; use `--ignore-static-ip` or `--ignore-static-mac` when static addresses would collide.
 5. Test time-dependent behavior your suite relies on, such as expiry, scheduled events, or delayed processing. A process snapshot does not guarantee identical wall-clock behavior.
-6. Compare complete rebuild/replay time with restore-and-readiness time, artifact size, and failure rate. Rebuild artifacts when the baseline or execution environment changes.
+6. Compare complete rebuild/replay time with restore-and-readiness time, artifact size, and failure rate. Include the cost of recapturing and validating artifacts each time the baseline or execution environment changes. For frequently edited baselines or few test runs, a direct rebuild may be simpler even if each run is slower.
 
 Application assertions determine whether the restore worked; a health response alone is insufficient. Keep real-cloud tests for semantics the emulator does not model.
 

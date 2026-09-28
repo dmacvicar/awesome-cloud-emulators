@@ -145,7 +145,7 @@ A baseline can capture a modeled landing-zone subset: supported account or proje
 | Process/container checkpoint | Captured execution state | CRIU, Podman, experimental Docker checkpointing; DMTCP for suitable processes | Environment-dependent restore; external services and mounted files need separate consistency handling. |
 | Filesystem or volume copy | Persisted files | Emulators with documented disk-backed state | A disk copy alone cannot restore in-memory state; stop or quiesce writes before capture. |
 
-Start with reproducible setup. If rebuilding is a measured bottleneck, first check emulator-native export or persistence, then request replay and consistent disk copies. Trial process checkpoints on compatible Linux hosts only when simpler methods do not meet the test budget. Compare end-to-end restore time, reliability, and artifact size; keep a rebuild path when artifacts become incompatible.
+Start with reproducible setup. Consider native export or persistence when the baseline is reused across runs or teams, workers need isolated copies, or setup is costly; then consider request replay and consistent disk copies. Trial process checkpoints on compatible Linux hosts only when simpler methods do not meet the need. Compare rebuild and restore time, reliability, artifact size, and the work to regenerate artifacts after baseline changes. Keep a rebuild path when artifacts become incompatible.
 
 See the [reusable emulator baseline workflow](reusable-emulator-baselines.md) for capture steps, restore acceptance tests, and primary documentation. These combinations are research candidates; no emulator-specific checkpoint/restore compatibility test has been performed for this list.
 
