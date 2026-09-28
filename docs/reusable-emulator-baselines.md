@@ -6,6 +6,26 @@ Use this workflow to prepare a repeatable starting state for tests or research w
 
 ## Choose what to preserve
 
+Start with versioned setup. If rebuilding is costly, trial a capture method that matches the emulator's state model, then validate it against the same baseline contract.
+
+```mermaid
+flowchart TD
+    A["Versioned seed code or IaC"] --> B{"Rebuild cost acceptable?"}
+    B -->|Yes| C["Rebuild each instance"]
+    B -->|No| D{"Repeatable API recording?"}
+    D -->|Yes| E["Trial request replay"]
+    D -->|No| F{"Documented persisted state?"}
+    F -->|Yes| G["Trial consistent state copy"]
+    F -->|No| H{"Compatible checkpoint host?"}
+    H -->|Yes| I["Trial process checkpoint"]
+    H -->|No| C
+    E --> J["Validate restore and isolation"]
+    G --> J
+    I --> J
+```
+
+The branches are a starting order, not a feature guarantee. A trial must include any volumes or external dependencies required for a consistent restore.
+
 | Method | What it preserves | When to consider it | Boundary |
 | --- | --- | --- | --- |
 | Declarative setup or seed code | Instructions and fixture data | The default for portable, reviewable baselines | Must reapply; unsupported API operations may require another setup path. |
@@ -29,6 +49,18 @@ Examples of checkpoint candidates include [CRIU](https://github.com/checkpoint-r
 ## Restore and prove isolation
 
 Run this acceptance sequence on the actual CI runner class for each candidate method:
+
+```mermaid
+flowchart TD
+    A["Capture baseline"] --> B["Restore isolated workers"]
+    B --> C["Assert initial resources"]
+    C --> D["Mutate fixtures and dispose"]
+    D --> E["Restore pristine baseline"]
+    E --> F{"No leaked changes or collisions?"}
+    F -->|Yes| G["Compare rebuild and restore"]
+    F -->|No| H["Fix isolation and recapture"]
+    H --> A
+```
 
 1. Start a fresh emulator and rebuild or replay the baseline, or restore a fresh instance from its captured state. Allocate isolated ports, identities, and writable storage per test worker.
 2. Wait for readiness, reconnect clients, and compare resource inventory and representative payloads with the baseline contract.
