@@ -86,8 +86,6 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 
 These tools run local workloads, manage emulator lifecycles, or prepare and restore test baselines; they are not full cloud emulators. Checkpoint integrations are listed for their specific emulator use case.
 
-For reusable test baselines across cloud emulators, see the [baseline and snapshot workflow](docs/reusable-emulator-baselines.md).
-
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/using-sam-cli-local-testing.html) - AWS tooling for local invocation and debugging of serverless applications, including Lambda functions.
 - [CRIU](https://criu.org) - Linux process checkpoint/restore utility for capturing a running emulator and resuming its in-memory state; requires a compatible kernel and runtime environment.
 - [DMTCP](https://github.com/dmtcp/dmtcp) - User-space checkpointing for Linux applications launched under its control; a candidate for emulator-process experiments after compatibility validation.
