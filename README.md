@@ -8,6 +8,10 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 
 **Emulation is not full service parity.** Check supported operations, persistence, identity behavior, runtime requirements, licensing, and access conditions. Use real-cloud tests for production-specific guarantees. The [selection guide](docs/selection-guide.md) includes scenario-based shortlists, a comparison of every entry, and an evaluation checklist.
 
+**License markers:** 💰 Paid commercial plan or license for commercial use; a free tier or exception may exist. 📜 Vendor-specific software terms or an EULA apply; this does **not** mean a fee is required. Open-source licenses still apply to unmarked tools. Markers highlight verified conditions, not an exhaustive license audit.
+
+See [license and access notes](docs/selection-guide.md#license-and-access-notes) for the marked tools and primary sources.
+
 ## Contents
 
 - [AWS](#aws)
@@ -30,13 +34,13 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 - [fakecloud](https://fakecloud.dev) - Local AWS API emulator with test SDKs for inspecting effects, resetting state, and controlling asynchronous processors.
 - [Floci](https://floci.io/floci) - Community AWS emulator that exposes multiple service APIs through a shared local endpoint.
 - [LocalEmu](https://localemu.cloud) - Python-based AWS emulator with persistent local state and Docker-backed execution for selected services.
-- [LocalStack](https://docs.localstack.cloud/aws) - Vendor-maintained AWS emulation platform distributed as a container; current activation requires authentication and features depend on the plan.
+- [LocalStack 💰 📜](https://docs.localstack.cloud/aws) - Vendor-maintained AWS emulation platform distributed as a container; commercial use requires an appropriate paid plan, subject to vendor exceptions; a free non-commercial Hobby plan is available and activation requires authentication.
 - [MiniStack](https://ministack.org) - Community AWS emulator with multi-account and multi-region support and optional engine-backed services.
 - [Moto](https://github.com/getmoto/moto) - Community AWS mocking library for Python tests, with a standalone server mode for other SDKs and languages.
 
 ### AWS Single-Service
 
-- [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) - AWS-provided local DynamoDB implementation for developing and testing database interactions.
+- [DynamoDB Local 📜](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) - AWS-provided local DynamoDB implementation for developing and testing database interactions.
 - [ElasticMQ](https://github.com/softwaremill/elasticmq) - Community message queue with an Amazon SQS-compatible interface, usable as a standalone server or embedded dependency.
 - [S3Mock](https://github.com/adobe/S3Mock) - Community implementation of a subset of the Amazon S3 API for local integration testing, with Docker and Testcontainers support.
 
@@ -50,9 +54,9 @@ Entries are grouped by the APIs they emulate, not where they run. Multi-service 
 ### Azure Single-Service
 
 - [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator) - Microsoft-provided local Cosmos DB environment; supported APIs and features vary by emulator variant and platform.
-- [Azure Event Hubs Emulator](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) - Microsoft-provided local environment for developing and testing Event Hubs producers and consumers.
+- [Azure Event Hubs Emulator 📜](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) - Microsoft-provided local environment for developing and testing Event Hubs producers and consumers.
 - [Azure Key Vault Emulator](https://github.com/james-gould/azure-keyvault-emulator) - Community Key Vault emulator for testing Azure SDK clients locally, with Docker and .NET Aspire integration.
-- [Azure Service Bus Emulator](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) - Microsoft-provided local Service Bus environment for testing messaging applications in isolation.
+- [Azure Service Bus Emulator 📜](https://learn.microsoft.com/en-us/azure/service-bus-messaging/overview-emulator) - Microsoft-provided local Service Bus environment for testing messaging applications in isolation.
 - [Azurite](https://github.com/Azure/Azurite) - Open-source Azure Storage emulator from Microsoft for Blob, Queue, and Table service development and testing.
 
 

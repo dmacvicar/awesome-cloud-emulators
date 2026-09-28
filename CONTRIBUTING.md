@@ -9,7 +9,7 @@ Include tools that emulate or mock identifiable cloud service APIs for local dev
 - Link to upstream repositories or official documentation.
 - Explain the provider, service, and practical use case.
 - Check documentation, installation instructions, maintenance, licensing, and access requirements.
-- Disclose relevant paid features or account requirements when material.
+- Disclose relevant paid features or account requirements when material. Use 💰 for paid commercial plans and 📜 for verified vendor-specific terms/EULAs, following the README legend. Keep markers consistent with the selection guide and link primary evidence; a vendor EULA does not by itself imply payment.
 - Prefer useful, documented tools over popularity or star counts.
 - Exclude generic HTTP mocks, production databases, and Kubernetes distributions without specific cloud emulation capabilities.
 - Keep archived, deprecated, and unsupported tools out of the main list. If a maintained product has moved away from an archived source repository, link its current distribution and document the distinction in the selection guide.
