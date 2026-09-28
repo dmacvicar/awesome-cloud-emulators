@@ -1,0 +1,43 @@
+name: Suggest an emulator
+description: Propose a cloud emulator or cloud-specific mock.
+title: "Add: "
+body:
+  - type: input
+    id: project
+    attributes:
+      label: Project name and upstream URL
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Cloud provider or category
+      options:
+        - AWS
+        - Microsoft Azure
+        - Google Cloud and Firebase
+        - Other cloud provider
+        - Supporting tool
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Services, usefulness, and verification
+      description: Link documentation and describe any testing performed.
+    validations:
+      required: true
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Limitations and access requirements
+      description: Note compatibility gaps, licensing, accounts, paid features, and maintenance.
+    validations:
+      required: true
+  - type: input
+    id: affiliation
+    attributes:
+      label: Affiliation
+      description: State your relationship to the project, or write none.
+    validations:
+      required: true
