@@ -12,7 +12,7 @@ Include tools that emulate or mock identifiable cloud service APIs for local dev
 - Disclose relevant paid features or account requirements when material.
 - Prefer useful, documented tools over popularity or star counts.
 - Exclude generic HTTP mocks, production databases, and Kubernetes distributions without specific cloud emulation capabilities.
-- Keep archived, deprecated, and unsupported tools out of the main list.
+- Keep archived, deprecated, and unsupported tools out of the main list. If a maintained product has moved away from an archived source repository, link its current distribution and document the distinction in the selection guide.
 - Disclose any affiliation with a proposed project.
 
 ## Entry format
@@ -27,7 +27,7 @@ Alphabetize entries within sections. Start descriptions with a capital letter an
 
 1. Check for duplicate entries and open suggestions.
 2. Review upstream documentation and, where feasible, try the tool.
-3. Update the README and any relevant guide.
+3. Update the README and its matching comparison row in `docs/selection-guide.md`. Keep the scenario shortlists and known limitations consistent.
 4. Explain usefulness, evidence, verification, and limitations in the PR.
 5. Run `npm ci` and `npm run lint` with Node.js 22 or newer.
 
