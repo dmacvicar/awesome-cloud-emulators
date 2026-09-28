@@ -4,7 +4,7 @@ Thank you for helping maintain Awesome Cloud Emulators.
 
 ## Scope and inclusion
 
-Include tools that emulate or mock identifiable cloud service APIs for local development or automated testing. Supporting tools must have a direct emulator use case.
+Include tools that emulate or mock identifiable cloud service APIs for local development or automated testing. Supporting tools must have a direct emulator use case, such as fixture replay, process checkpoint/restore, or test lifecycle management. For checkpointing entries, document platform restrictions and distinguish upstream capability from a tested emulator integration.
 
 - Link to upstream repositories or official documentation.
 - Explain the provider, service, and practical use case.
