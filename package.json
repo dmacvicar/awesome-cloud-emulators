@@ -1,0 +1,17 @@
+{
+  "name": "awesome-cloud-emulators",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A curated list of cloud emulators and local cloud development tools for AWS, Azure, and Google Cloud. Explore LocalStack, Moto, Azurite, Firebase, and more for integration testing and CI/CD.",
+  "license": "CC0-1.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "node scripts/lint.mjs",
+    "lint:full": "awesome-lint README.md"
+  },
+  "devDependencies": {
+    "awesome-lint": "2.3.0"
+  }
+}

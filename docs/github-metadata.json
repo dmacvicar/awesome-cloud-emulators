@@ -1,0 +1,25 @@
+{
+  "description": "A curated list of cloud emulators and local cloud development tools for AWS, Azure, and Google Cloud. Explore LocalStack, Moto, Azurite, Firebase, and more for integration testing and CI/CD.",
+  "topics": [
+    "awesome",
+    "awesome-list",
+    "cloud-emulators",
+    "cloud-emulation",
+    "local-development",
+    "aws",
+    "azure",
+    "gcp",
+    "google-cloud",
+    "localstack",
+    "moto",
+    "azurite",
+    "firebase",
+    "serverless",
+    "integration-testing",
+    "testing",
+    "testcontainers",
+    "developer-tools",
+    "devops",
+    "ci-cd"
+  ]
+}
