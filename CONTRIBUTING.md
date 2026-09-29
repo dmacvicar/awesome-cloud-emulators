@@ -6,6 +6,8 @@ Thank you for helping maintain Awesome Cloud Emulators.
 
 Include tools that emulate or mock identifiable cloud service APIs for local development or automated testing. Supporting tools must have a direct emulator use case, such as fixture replay, process checkpoint/restore, or test lifecycle management. For checkpointing entries, document platform restrictions and distinguish upstream capability from a tested emulator integration.
 
+The separate Beyond Emulation section may include a cloud-API-compatible infrastructure platform when it enables tests that require real workload execution. State clearly that it is not an emulator and document its host and access requirements.
+
 - Link to upstream repositories or official documentation.
 - Explain the provider, service, and practical use case.
 - Check documentation, installation instructions, maintenance, licensing, and access requirements.
@@ -27,7 +29,7 @@ Alphabetize entries within sections. Start descriptions with a capital letter an
 
 1. Check for duplicate entries and open suggestions.
 2. Review upstream documentation and, where feasible, try the tool.
-3. Update the README and its matching comparison row in `docs/selection-guide.md`. Keep the scenario shortlists and known limitations consistent.
+3. Update the README and its matching comparison or Beyond Emulation row in `docs/selection-guide.md`. Keep the scenario shortlists and known limitations consistent.
 4. Explain usefulness, evidence, verification, and limitations in the PR.
 5. Run `npm ci` and `npm run lint` with Node.js 22 or newer.
 

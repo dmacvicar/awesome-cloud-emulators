@@ -26,6 +26,7 @@ See [license and access notes](docs/selection-guide.md#license-and-access-notes)
   - [Google Cloud Multi-Service](#google-cloud-multi-service)
   - [Google Cloud Single-Service](#google-cloud-single-service)
 - [Cross-Cloud](#cross-cloud)
+- [Beyond Emulation](#beyond-emulation)
 - [Supporting Tools](#supporting-tools)
 - [Choosing an Emulator](#choosing-an-emulator)
 
@@ -90,6 +91,13 @@ See [license and access notes](docs/selection-guide.md#license-and-access-notes)
 
 - [cloudemu](https://github.com/stackshy/cloudemu) - In-memory simulation of AWS, Azure, and Google Cloud APIs, runnable as a server or embedded in Go tests.
 - [Vera](https://github.com/project-vera/vera) - Local simulation of AWS EC2 and Google Compute APIs for infrastructure automation tests.
+
+
+## Beyond Emulation
+
+Some infrastructure tests need real guest execution, storage, and networking behind cloud-compatible APIs. The platforms here run workloads on your own infrastructure; they are alternatives to API emulators, with different host requirements and costs.
+
+- [Spinifex 💰](https://github.com/mulgadc/spinifex) - Self-hosted AWS-compatible platform for testing infrastructure and workloads with real QEMU/KVM instances, storage, and OVN-backed networking.
 
 
 ## Supporting Tools

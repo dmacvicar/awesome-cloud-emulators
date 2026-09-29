@@ -12,6 +12,7 @@ Choose against a representative test, not a service count, implementation langua
 - [Comparison by cloud](#comparison-by-cloud)
 - [License and access notes](#license-and-access-notes)
 - [Important distinctions](#important-distinctions)
+- [Beyond emulation](#beyond-emulation)
 - [Evaluation checklist](#evaluation-checklist)
 - [Reusable emulator baselines](#reusable-emulator-baselines)
 - [Adoption sequence](#adoption-sequence)
@@ -31,6 +32,7 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | Test a Firebase application | Firebase Local Emulator Suite | Auth, Security Rules, database events, and function triggers used by the app. |
 | Test Google Cloud data and messaging clients | Provider emulators; Fake GCS Server, Fullstory, BigQuery, Cloud Tasks, or Pub/Sub pstest for Go | Client endpoints, SQL/queries, messages, tasks, and failure semantics. |
 | Test several Google Cloud APIs together | Floci GCP | REST/gRPC coverage and integrated behavior for your specific flow. |
+| Test real VM boot and guest networking through AWS-compatible APIs | Spinifex | KVM host setup, cloud-init, SSH reachability, network rules, teardown, and differences from AWS. |
 | Test infrastructure automation across clouds | cloudemu; Vera for EC2/Compute scope | Full create/read/update/delete lifecycle with the real CLI or IaC provider. |
 | Run emulators in automated Java tests | Testcontainers Azure, Google Cloud, or LocalStack modules | Image readiness, fixture isolation, cleanup, and parallel execution. |
 | Invoke and debug Lambda locally | AWS SAM CLI; Lambda Runtime Interface Emulator for container images | Runtime and event handling; configure external service dependencies separately. |
@@ -116,10 +118,11 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 
 ## License and access notes
 
-Checked against primary sources on **2026-09-28**. These markers describe the listed distribution; dependencies and optional hosted services can carry separate terms.
+Existing entries checked against primary sources on **2026-09-28**; Spinifex checked on **2026-09-29**. These markers describe the listed distribution; dependencies and optional hosted services can carry separate terms.
 
 | Tool | Markers | What to check | Primary source |
 | --- | --- | --- | --- |
+| Spinifex | 💰 | AGPL-3.0 is free; an optional paid commercial edition includes a separate license, enterprise features, and support. | [Purchase and editions](https://mulgadc.com/purchase), [source license](https://github.com/mulgadc/spinifex/blob/main/LICENSE). |
 | LocalStack | 💰 📜 | Commercial use is offered through paid plans, subject to vendor exceptions/programs. Hobby is free for non-commercial use; activation requires an account/token. | [Plans and pricing](https://www.localstack.cloud/pricing), [activation](https://docs.localstack.cloud/aws/getting-started/installation). |
 | DynamoDB Local | 📜 | The downloadable software has a specific AWS license agreement. This marker identifies those conditions, not a paid emulator subscription. | [DynamoDB Local License Agreement](https://aws.amazon.com/dynamodb/dynamodblocallicense). |
 | Azure Event Hubs Emulator | 📜 | Startup requires accepting Microsoft's software terms through `ACCEPT_EULA`. | [Microsoft setup and EULA instructions](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator). |
@@ -143,6 +146,16 @@ The [former LocalStack source repository](https://github.com/localstack/localsta
 ### Fullstory coverage
 
 Fullstory's repository ships Bigtable and Cloud Storage implementations. Its README also discusses Google's `pubsub/pstest`, now listed separately as an in-process Go fake. The provider's standalone Pub/Sub Emulator remains a distinct entry.
+
+## Beyond emulation
+
+A self-hosted AWS-compatible platform can run real workloads when a mock API response cannot validate VM boot, cloud-init, SSH, or guest networking. This is a different deployment choice from a local emulator: budget for virtualization-capable Linux hosts, network setup, storage, and cleanup. Continue to validate AWS-specific behavior in a controlled AWS account.
+
+| Platform | Scope | How it runs | First validation |
+| --- | --- | --- | --- |
+| [Spinifex 💰](https://github.com/mulgadc/spinifex) | AWS-compatible infrastructure APIs and real workload execution | Self-hosted Linux platform using QEMU/KVM, block and object storage, and OVN networking | Verify needed API operations, guest boot and connectivity, host prerequisites, and differences from AWS. |
+
+The [AGPL-3.0 edition](https://github.com/mulgadc/spinifex/blob/main/LICENSE) is free; [a paid commercial edition](https://mulgadc.com/purchase) offers another licensing option and support. The 💰 marker denotes that paid option, not a requirement to pay for the open-source edition.
 
 ## Evaluation checklist
 
@@ -202,7 +215,7 @@ These combinations are research candidates; verify restore behavior and isolatio
 
 Documentation review: **2026-09-28**. This is a documentation-based comparison, not a hands-on compatibility certification or performance benchmark.
 
-- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. That reconciliation produced 28 emulator/mock entries plus 2 supporting tools. A subsequent checkpoint/baseline review added 5 supporting tools or features. This review added 2 focused API test doubles and 5 supporting tools, bringing the catalog to 42 entries: 30 emulators/mocks and 12 supporting entries.
+- Reconciled the original repository catalog with `awesome-cloud-emulators-README-v2.txt`: retained all 18 existing entries, added 12 distinct tools, and merged naming/URL variants rather than duplicating them. That reconciliation produced 28 emulator/mock entries plus 2 supporting tools. A subsequent checkpoint/baseline review added 5 supporting tools or features. This review added 2 focused API test doubles and 5 supporting tools, bringing the emulator and supporting-tool catalog to 42 entries: 30 emulators/mocks and 12 supporting entries. Spinifex was subsequently added in the separate Beyond Emulation section and is outside that count.
 - Preserved the attachment's provider and multi-service/single-service organization, while keeping detailed comparisons in this guide and a concise catalog in the README.
 - Used upstream documentation linked in the tables. Removed exact service counts, benchmark claims, blanket “active” labels, and hard-coded Java versions that do not establish suitability and can quickly become stale.
 - Removed the attachment's Cloud Tasks inactivity claim: the [repository metadata](https://api.github.com/repos/aertje/cloud-tasks-emulator) reported a push on 2026-09-09 during this review. A recent push alone does not establish maintenance quality or compatibility.
