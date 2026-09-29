@@ -55,6 +55,7 @@ See [license and access notes](docs/selection-guide.md#license-and-access-notes)
 ### Azure Multi-Service
 
 - [Floci AZ](https://github.com/floci-io/floci-az) - Community Azure emulator exposing multiple service APIs, with Docker-backed execution for selected services.
+- [LocalStack for Azure 💰 📜](https://docs.localstack.cloud/azure) - Vendor-maintained Azure emulator distributed as a container, covering Resource Manager and selected data plane APIs; it is in private preview with access enabled on request, commercial use requires an appropriate paid plan, and activation requires an auth token.
 - [miniblue](https://github.com/moabukar/miniblue) - Community Go-based Azure emulator that runs multiple services behind a single port, with no Azure account required and optional real backends such as PostgreSQL and Redis.
 - [Topaz](https://github.com/TheCloudTheory/Topaz) - Community Azure emulator covering control and data plane APIs, with local ARM and Bicep template deployments, Azure RBAC, and Microsoft Entra ID tenant emulation.
 
