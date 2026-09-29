@@ -126,3 +126,7 @@ Compare candidates using the [selection guide](docs/selection-guide.md#start-wit
 ## Contributing
 
 Suggestions and corrections are welcome. Read the [contribution guidelines](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md), then open a pull request or use an issue template. Include upstream evidence, important limitations, and any affiliation.
+
+## Support
+
+If this list helps your work, you can [buy me a coffee](https://buymeacoffee.com/upgundecha) to support its maintenance.
