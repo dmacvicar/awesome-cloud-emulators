@@ -27,7 +27,7 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | Exercise an AWS event-driven application | fakecloud, Floci, LocalEmu, LocalStack, MiniStack | A complete publish → consume → retry path, not just resource creation. |
 | Test one AWS dependency | DynamoDB Local, ElasticMQ, S3Mock, S3Proxy | Exact database, queue, or object operations required by the application. |
 | Test an Azure application dependency | Azurite, Cosmos DB, Event Hubs, Service Bus, or Key Vault emulators | SDK connectivity, TLS, and required data-plane behavior. |
-| Test several Azure APIs together | Floci AZ | Cross-service behavior and which functions or engines require Docker. |
+| Test several Azure APIs together | Floci AZ, miniblue, Topaz | Cross-service behavior, runtime requirements, and which services need external engines or backends. |
 | Test a Firebase application | Firebase Local Emulator Suite | Auth, Security Rules, database events, and function triggers used by the app. |
 | Test Google Cloud data and messaging clients | Provider emulators; Fake GCS Server, Fullstory, BigQuery, Cloud Tasks, or Pub/Sub pstest for Go | Client endpoints, SQL/queries, messages, tasks, and failure semantics. |
 | Test several Google Cloud APIs together | Floci GCP | REST/gRPC coverage and integrated behavior for your specific flow. |
@@ -65,6 +65,8 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | Tool | API scope | How it runs | Maintainer | Key evaluation question |
 | --- | --- | --- | --- | --- |
 | [Floci AZ](https://github.com/floci-io/floci-az) | Azure APIs | Docker / Compose; engine-backed services | Community | Verify SDK routing, TLS, auth mode, and Docker requirements per service. |
+| [miniblue](https://github.com/moabukar/miniblue) | Multiple Azure APIs | Go binary, Homebrew, or Docker | Community | Verify supported operations, certificate trust, and which services use real backends. |
+| [Topaz](https://github.com/TheCloudTheory/Topaz) | Azure control and data plane APIs | Single binary, Homebrew, or Docker | Community | Verify template deployments, RBAC and identity behavior, and per-service coverage. |
 | [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator) | Cosmos DB | Windows or container variants | Microsoft | Choose the correct API, OS, and architecture variant; check TLS setup. |
 | [Azure Event Hubs Emulator 📜](https://learn.microsoft.com/en-us/azure/event-hubs/overview-emulator) | Event Hubs | Container with Azurite dependency | Microsoft | Check protocols, partition behavior, limits, and restart persistence. |
 | [Azure Key Vault Emulator](https://github.com/james-gould/azure-keyvault-emulator) | Key Vault APIs | Docker; .NET Aspire integration | Community | Check secrets/keys/certificates coverage, TLS trust, and persistence. |
