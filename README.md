@@ -29,6 +29,7 @@ See [license and access notes](docs/selection-guide.md#license-and-access-notes)
 - [Beyond Emulation](#beyond-emulation)
 - [Supporting Tools](#supporting-tools)
 - [Choosing an Emulator](#choosing-an-emulator)
+- [Support](#support)
 
 ## AWS
 
