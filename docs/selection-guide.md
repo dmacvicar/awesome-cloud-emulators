@@ -28,7 +28,7 @@ These are candidates to evaluate, not a benchmark ranking or a claim of intercha
 | Exercise an AWS event-driven application | fakecloud, Floci, LocalEmu, LocalStack, MiniStack | A complete publish → consume → retry path, not just resource creation. |
 | Test one AWS dependency | DynamoDB Local, ElasticMQ, S3Mock, S3Proxy | Exact database, queue, or object operations required by the application. |
 | Test an Azure application dependency | Azurite, Cosmos DB, Event Hubs, Service Bus, or Key Vault emulators | SDK connectivity, TLS, and required data-plane behavior. |
-| Test several Azure APIs together | Floci AZ, miniblue, Topaz | Cross-service behavior, runtime requirements, and which services need external engines or backends. |
+| Test several Azure APIs together | Floci AZ, LocalStack for Azure, miniblue, Topaz | Cross-service behavior, runtime requirements, and which services need external engines or backends. |
 | Test a Firebase application | Firebase Local Emulator Suite | Auth, Security Rules, database events, and function triggers used by the app. |
 | Test Google Cloud data and messaging clients | Provider emulators; Fake GCS Server, Fullstory, BigQuery, Cloud Tasks, or Pub/Sub pstest for Go | Client endpoints, SQL/queries, messages, tasks, and failure semantics. |
 | Test several Google Cloud APIs together | Floci GCP | REST/gRPC coverage and integrated behavior for your specific flow. |
@@ -67,6 +67,7 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 | Tool | API scope | How it runs | Maintainer | Key evaluation question |
 | --- | --- | --- | --- | --- |
 | [Floci AZ](https://github.com/floci-io/floci-az) | Azure APIs | Docker / Compose; engine-backed services | Community | Verify SDK routing, TLS, auth mode, and Docker requirements per service. |
+| [LocalStack for Azure 💰 📜](https://docs.localstack.cloud/azure) | Azure Resource Manager and selected data plane APIs | Container, managed through CLI or Docker | Vendor | Preview access, CI Auth Tokens, per-service coverage, and network requirements. |
 | [miniblue](https://github.com/moabukar/miniblue) | Multiple Azure APIs | Go binary, Homebrew, or Docker | Community | Verify supported operations, certificate trust, and which services use real backends. |
 | [Topaz](https://github.com/TheCloudTheory/Topaz) | Azure control and data plane APIs | Single binary, Homebrew, or Docker | Community | Verify template deployments, RBAC and identity behavior, and per-service coverage. |
 | [Azure Cosmos DB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/emulator) | Cosmos DB | Windows or container variants | Microsoft | Choose the correct API, OS, and architecture variant; check TLS setup. |
@@ -118,12 +119,13 @@ Delivery describes how you consume the tool, rather than guessing the implementa
 
 ## License and access notes
 
-Existing entries checked against primary sources on **2026-09-28**; Spinifex checked on **2026-09-29**. These markers describe the listed distribution; dependencies and optional hosted services can carry separate terms.
+Existing entries checked against primary sources on **2026-09-28**; Spinifex and LocalStack for Azure checked on **2026-09-29**. These markers describe the listed distribution; dependencies and optional hosted services can carry separate terms.
 
 | Tool | Markers | What to check | Primary source |
 | --- | --- | --- | --- |
 | Spinifex | 💰 | AGPL-3.0 is free; an optional paid commercial edition includes a separate license, enterprise features, and support. | [Purchase and editions](https://mulgadc.com/purchase), [source license](https://github.com/mulgadc/spinifex/blob/main/LICENSE). |
 | LocalStack | 💰 📜 | Commercial use is offered through paid plans, subject to vendor exceptions/programs. Hobby is free for non-commercial use; activation requires an account/token. | [Plans and pricing](https://www.localstack.cloud/pricing), [activation](https://docs.localstack.cloud/aws/getting-started/installation). |
+| LocalStack for Azure | 💰 📜 | Private preview: Azure access is enabled on request for an active LocalStack subscription (paid, trial, or Hobby). Commercial use is offered through paid plans; Hobby is free for non-commercial use. Activation requires an auth token; CI requires a CI Auth Token. | [Preview access and activation](https://docs.localstack.cloud/azure/getting-started/auth-token/#managing-your-license), [plans and pricing](https://www.localstack.cloud/pricing), [Terms of Service](https://www.localstack.cloud/legal/terms-of-service). |
 | DynamoDB Local | 📜 | The downloadable software has a specific AWS license agreement. This marker identifies those conditions, not a paid emulator subscription. | [DynamoDB Local License Agreement](https://aws.amazon.com/dynamodb/dynamodblocallicense). |
 | Azure Event Hubs Emulator | 📜 | Startup requires accepting Microsoft's software terms through `ACCEPT_EULA`. | [Microsoft setup and EULA instructions](https://learn.microsoft.com/en-us/azure/event-hubs/test-locally-with-event-hub-emulator). |
 | Azure Service Bus Emulator | 📜 | Setup requires accepting the emulator and SQL Server Linux terms through `ACCEPT_EULA`. | [Microsoft setup and EULA instructions](https://learn.microsoft.com/en-us/azure/service-bus-messaging/test-locally-with-service-bus-emulator). |
@@ -142,6 +144,8 @@ An unmarked entry is not a claim of unrestricted use or a verified open-source r
 ### LocalStack source and product status
 
 The [former LocalStack source repository](https://github.com/localstack/localstack) is archived, but its notice directs users to the unified product. The catalog therefore links current product documentation rather than treating an archived checkout as the supported distribution. Current [installation documentation](https://docs.localstack.cloud/aws/getting-started/installation) requires authentication to activate AWS features; check plan and CI conditions before adopting it.
+
+LocalStack for Azure has no public source repository, so the catalog links its [documentation](https://docs.localstack.cloud/azure). It is in private preview; review the [license and access notes](#license-and-access-notes) before adopting it.
 
 ### Fullstory coverage
 
