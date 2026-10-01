@@ -12,6 +12,8 @@ Within each section, open-source tools come first, followed by other distributio
 
 **Emulation is not full service parity.** Check supported operations, persistence, identity behavior, runtime requirements, licensing, and access conditions. Use real-cloud tests for production-specific guarantees. The [selection guide](docs/selection-guide.md) includes scenario-based shortlists, a comparison of every entry, and an evaluation checklist.
 
+**Focus and independence:** This list prioritizes open-source cloud emulators and supporting tools. Commercial products are included where relevant to help readers compare options; inclusion does not imply endorsement or a recommendation to purchase. Evaluate each tool’s capabilities, licensing, costs, and suitability for your needs.
+
 **License markers:** 💰 Paid commercial plan or license for commercial use; a free tier or exception may exist. 📜 Vendor-specific software terms or an EULA apply; this does **not** mean a fee is required. Open-source licenses still apply to unmarked tools. Markers highlight verified conditions, not an exhaustive license audit.
 
 See [license and access notes](docs/selection-guide.md#license-and-access-notes) for the marked tools and primary sources.
