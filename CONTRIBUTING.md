@@ -23,7 +23,7 @@ The separate Beyond Emulation section may include a cloud-API-compatible infrast
 - [Project Name](https://example.com/project) - Concise description of the service and useful distinction.
 ```
 
-Alphabetize entries within sections. Start descriptions with a capital letter and end with a period. Use canonical names, direct HTTPS links, and neutral language. Avoid referral links and unsupported claims of full compatibility.
+Order entries within each section by open source, other distributions, then paid/commercial tools, and alphabetize within each group. Keep usable open-source editions in the first group even when optional paid editions exist. Use Other distributions for free vendor binaries, mixed suites, or tools without an established runtime source license; do not equate free downloads or public source with an open-source license. Start descriptions with a capital letter and end with a period. Use canonical names, direct HTTPS links, and neutral language. Avoid referral links and unsupported claims of full compatibility.
 
 ## Pull requests
 
